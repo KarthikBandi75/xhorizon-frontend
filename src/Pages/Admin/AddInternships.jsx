@@ -43,7 +43,7 @@ const AddInternships = () => {
       };
 
       const response = await axios.post("https://xhorizon-backend-1-4pjq.onrender.com/api/jobs/", payload);
-
+console.log(response);
       if (response.data.success) {
         toast.success("Internship added successfully!");
         setMessage(response.data.message || "Internship posted!");
