@@ -16,7 +16,7 @@ const FacultyProfile = () => {
 
   const getProfile = async () => {
     try {
-      const response = await axios.get("http://localhost:7000/api/faculty/faculty-profile", {
+      const response = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/faculty/faculty-profile", {
         headers: {
           token: localStorage.getItem("FacultyToken"),
         },
@@ -56,7 +56,7 @@ const FacultyProfile = () => {
     }
 
     try {
-      const response = await axios.put("http://localhost:7000/api/faculty/", form, {
+      const response = await axios.put("https://xhorizon-backend-1-4pjq.onrender.com/api/faculty/", form, {
         headers: {
           token: localStorage.getItem("FacultyToken"),
           "Content-Type": "multipart/form-data",
