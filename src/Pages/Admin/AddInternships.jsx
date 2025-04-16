@@ -42,7 +42,7 @@ const AddInternships = () => {
         deadline: formData.deadline,
       };
 
-      const response = await axios.post("http://localhost:7000/api/jobs/", payload);
+      const response = await axios.post("https://xhorizon-backend-1-4pjq.onrender.com/api/jobs/", payload);
 
       if (response.data.success) {
         toast.success("Internship added successfully!");
