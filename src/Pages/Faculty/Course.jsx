@@ -14,7 +14,7 @@ const Course = () => {
     if (!FacultyToken) return;
     try {
       const token = localStorage.getItem('FacultyToken');
-      const response = await axios.get("http://localhost:7000/api/course/course", {
+      const response = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/course/course", {
         headers: { token },
       });
       const extractedCourses = response.data?.courses?.courses || [];
