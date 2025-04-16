@@ -50,7 +50,7 @@ const CodingQuestions = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:7000/api/coading-questions/add/${id}`,
+        `https://xhorizon-backend-1-4pjq.onrender.com/api/coading-questions/add/${id}`,
         data,
         {
           headers: {
