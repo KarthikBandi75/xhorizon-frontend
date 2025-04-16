@@ -13,7 +13,7 @@ const FacultyDashboard = () => {
   const getDashboardData = async () => {
     try {
       const token = localStorage.getItem('FacultyToken');
-      const response = await axios.get("http://localhost:7000/api/course/course", {
+      const response = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/course/course", {
         headers: { token },
       });
 
