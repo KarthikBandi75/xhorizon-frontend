@@ -3,7 +3,7 @@ import axios from "../config/axiosConfig";
 import { Mail, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import Input from "../components/Input";
+import Input from "../Components/Input";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AppContext";
 
