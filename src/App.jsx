@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 
 import Navbar from './Components/Navbar';
 import Sidebar from './Components/Sidebar';
-import FacultySideBar from './Components/facultySidebar.jsx';
+import FacultySideBar from './Components/FacultySidebar.jsx';
 
 import AdminDashboard from './Pages/Admin/admindashboard.jsx';
 import AddFaculty from './Pages/Admin/addFaculty.jsx';
