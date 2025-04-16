@@ -33,7 +33,7 @@ const Course = () => {
   const deleteCodingQuestion = async (id) => {
     try {
       const token = localStorage.getItem("FacultyToken");
-      await axios.delete(`http://localhost:7000/api/coading-questions/${id}`, {
+      await axios.delete(`https://xhorizon-backend-1-4pjq.onrender.com/api/coading-questions/${id}`, {
         headers: { token },
       });
       toast.success("Coding question deleted!");
@@ -46,7 +46,7 @@ const Course = () => {
   const deletelectureMaterial = async (id) => {
     try {
       const token = localStorage.getItem("FacultyToken");
-      await axios.delete(`http://localhost:7000/api/lectures/${id}`, {
+      await axios.delete(`https://xhorizon-backend-1-4pjq.onrender.com/api/lectures/${id}`, {
         headers: { token },
       });
       toast.success("Lecture material deleted!");
@@ -59,7 +59,7 @@ const Course = () => {
   const deleteassessment = async (id) => {
     try {
       const token = localStorage.getItem("FacultyToken");
-      await axios.delete(`http://localhost:7000/api/assesment/${id}`, {
+      await axios.delete(`https://xhorizon-backend-1-4pjq.onrender.com/api/assesment/${id}`, {
         headers: { token },
       });
       toast.success("Assessment deleted!");
