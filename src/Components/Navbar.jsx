@@ -5,13 +5,13 @@ import { AuthContext } from "../Context/AppContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { setadminToken, setfacultyToken } = useContext(AuthContext); // ✅ Get setters from context
+  const { setadminToken, setfacultyToken } = useContext(AuthContext);
 
   const logout = () => {
     localStorage.removeItem("AdminToken");
     localStorage.removeItem("FacultyToken");
-    setadminToken(""); // ✅ Clear token state
-    setfacultyToken(""); // ✅ Clear token state
+    setadminToken(""); 
+    setfacultyToken(""); 
     navigate("/login");
   };
 
@@ -24,7 +24,7 @@ const Navbar = () => {
 
       <button
         onClick={logout}
-        className="px-6 sm:px-10 py-2 text-sm font-medium text-white bg-blue-500 rounded-full shadow hover:bg-blue-600 transition duration-200"
+        className="px-6 sm:px-10 py-2 text-sm font-medium text-white bg-blue-500 rounded-full shadow hover:bg-blue-600 transition duration-200 cursor-pointer"
       >
         Logout
       </button>
