@@ -73,7 +73,7 @@ const Assessments = () => {
     };
 
     try {
-      const response = await axios.post(`http://localhost:7000/api/assesment/add/${id}`, data, {
+      const response = await axios.post(`https://xhorizon-backend-1-4pjq.onrender.com/api/assesment/add/${id}`, data, {
         headers: {
           token: FacultyToken,
         },
