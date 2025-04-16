@@ -1,6 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:7000";
+axios.defaults.baseURL = "https://xhorizon-backend-1-4pjq.onrender.com";
 axios.defaults.withCredentials = true;
 
 export default axios;
