@@ -53,7 +53,7 @@ const LectureMaterials = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg mt-12">
       <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Add Lecture Material</h2>
       <form onSubmit={addLectureMaterial} className="space-y-4">
         <div>
