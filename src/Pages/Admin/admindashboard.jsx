@@ -60,11 +60,7 @@ const AdminDashboard = () => {
               Here’s a quick glance at your college insights.
             </p>
           </div>
-          <img
-            src="https://via.placeholder.com/48"
-            alt="Admin avatar"
-            className="h-12 w-12 rounded-full border"
-          />
+        
         </div>
 
         {/* Stat Cards */}
