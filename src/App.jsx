@@ -7,7 +7,7 @@ import FacultyNavbar from './Components/FacultyNavbar';
 
 import AdminDashboard from './Pages/Admin/admindashboard.jsx';
 import AddFaculty from './Pages/Admin/addFaculty.jsx';
-import AllFaculties from './Pages/Admin/allFaculties.jsx';
+import AllFaculties from './Pages/Admin/allFaculties.jsx'; 
 
 import FacultyDashboard from './Pages/Faculty/FacultyDashboard.jsx';
 import Assessments from './Pages/Faculty/Assessments.jsx';
