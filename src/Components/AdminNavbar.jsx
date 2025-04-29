@@ -5,7 +5,7 @@ import { FiUserPlus, FiUsers, FiHome, FiBookOpen, FiBriefcase } from 'react-icon
 import { Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AuthContext } from '../Context/AppContext';
-import { assets } from '../assets/assets';
+
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
@@ -50,7 +50,8 @@ const AdminNavbar = () => {
           className="flex items-center gap-2 text-lg font-semibold text-[#0A66C2] cursor-pointer"
           onClick={() => navigate('/admin-dashboard')}
         >
-          <img src={assets.logo} alt="" className="w-30" />
+        <FaUniversity className="text-2xl text-blue-500" /> 
+        <p className="cursor-pointer">Campus Bridge</p>
         </div>
 
         <div className="hidden md:flex items-center gap-4">
