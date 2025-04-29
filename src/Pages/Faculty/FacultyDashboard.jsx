@@ -4,10 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from '../../config/axiosConfig';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ClipboardIcon, CodeBracketIcon, DocumentTextIcon, UserIcon } from '@heroicons/react/24/outline';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
 
 const FacultyDashboard = () => {
   const { facultyToken } = useContext(AuthContext);
@@ -80,10 +77,10 @@ const FacultyDashboard = () => {
     if (facultyToken) fetchData();
   }, [facultyToken]);
 
-  const chartData = [
-    { name: 'Total Courses', value: metrics.totalCourses, fill: '#0A66C2' },
-    { name: 'Active Courses', value: metrics.activeCourses, fill: '#00A69C' },
-    { name: 'Students', value: metrics.totalStudents, fill: '#EF4444' },
+  const tableData = [
+    { name: 'Total Courses', value: metrics.totalCourses, color: '#0A66C2' },
+    { name: 'Active Courses', value: metrics.activeCourses, color: '#00A69C' },
+    { name: 'Enrolled Students', value: metrics.totalStudents, color: '#EF4444' },
   ];
 
   const cardVariants = {
@@ -129,10 +126,10 @@ const FacultyDashboard = () => {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
         >
           {[
-            { label: 'Total Courses', value: metrics.totalCourses, icon: <DocumentTextIcon className="text-[#0A66C2]" size={24} />, link: '/course' },
-            { label: 'Active Courses', value: metrics.activeCourses, icon: <DocumentTextIcon className="text-[#00A69C]" size={24} />, link: '/course' },
-            { label: 'Enrolled Students', value: metrics.totalStudents, icon: <UserIcon className="text-[#EF4444]" size={24} />, link: '/course' },
-            { label: 'Profile Completion', value: metrics.profileCompletion, icon: <UserIcon className="text-[#0A66C2]" size={24} />, link: '/profile' },
+            { label: 'Total Courses', value: metrics.totalCourses, icon: <DocumentTextIcon className="text-[#0A66C2] h-6 w-6" />, link: '/course' },
+            { label: 'Active Courses', value: metrics.activeCourses, icon: <DocumentTextIcon className="text-[#00A69C] h-6 w-6" />, link: '/course' },
+            { label: 'Enrolled Students', value: metrics.totalStudents, icon: <UserIcon className="text-[#EF4444] h-6 w-6" />, link: '/course' },
+            { label: 'Profile Completion', value: metrics.profileCompletion, icon: <UserIcon className="text-[#0A66C2] h-6 w-6" />, link: '/profile' },
           ].map((metric, index) => (
             <motion.div
               key={metric.label}
@@ -140,23 +137,18 @@ const FacultyDashboard = () => {
               className="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition-shadow flex items-center space-x-3"
             >
               {metric.icon}
-              <div>
+              <div className="flex-1">
                 <h3 className="text-sm font-medium text-[#6B7280]">{metric.label}</h3>
-                <p className="text-xl font-semibold text-[#1F2A44]">{metric.label === 'Profile Completion' ? `${metric.value}%` : metric.value}</p>
+                <p className="text-xl font-semibold text-[#1F2A44]">
+                  {metric.label === 'Profile Completion' ? `${metric.value}%` : metric.value}
+                </p>
                 <Link to={metric.link} className="text-[#0A66C2] hover:text-[#0958A6] text-sm">
                   View Details
                 </Link>
               </div>
               {metric.label === 'Profile Completion' && (
-                <div className="w-12 h-12">
-                  <CircularProgressbar
-                    value={metric.value}
-                    styles={buildStyles({
-                      pathColor: '#0A66C2',
-                      textColor: '#1F2A44',
-                      trailColor: '#E5E7EB',
-                    })}
-                  />
+                <div className="w-12 h-12 flex items-center justify-center bg-[#E6F0FA] rounded-full">
+                  <span className="text-sm font-semibold text-[#0A66C2]">{metric.value}%</span>
                 </div>
               )}
             </motion.div>
@@ -171,19 +163,31 @@ const FacultyDashboard = () => {
             className="lg:col-span-2 bg-white rounded-lg shadow-sm p-5 border border-gray-200"
           >
             <h3 className="text-base font-semibold text-[#1F2A44] mb-4">Course Activity</h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="name" stroke="#6B7280" />
-                  <YAxis stroke="#6B7280" />
-                  <Tooltip
-                    contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-                    labelStyle={{ color: '#1F2A44' }}
-                  />
-                  <Bar dataKey="value" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-sm font-medium text-[#6B7280] border-b border-gray-200">
+                    <th className="py-3 px-4">Metric</th>
+                    <th className="py-3 px-4">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.map((item, index) => (
+                    <motion.tr
+                      key={item.name}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="border-b border-gray-100 last:border-b-0 hover:bg-[#E6F0FA]"
+                    >
+                      <td className="py-3 px-4 text-sm text-[#1F2A44] font-medium">{item.name}</td>
+                      <td className="py-3 px-4 text-sm font-semibold" style={{ color: item.color }}>
+                        {item.value}
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </motion.div>
 
@@ -205,7 +209,7 @@ const FacultyDashboard = () => {
                     className="flex items-center space-x-3"
                   >
                     <div className={`p-2 rounded-full ${activity.type === 'assessment' ? 'bg-[#E6F0FA]' : 'bg-[#D1FAE5]'}`}>
-                      {activity.type === 'assessment' ? <ClipboardIcon className="text-[#0A66C2]" size={16} /> : <DocumentTextIcon className="text-[#00A69C]" size={16} />}
+                      {activity.type === 'assessment' ? <ClipboardIcon className="text-[#0A66C2] h-4 w-4" /> : <DocumentTextIcon className="text-[#00A69C] h-4 w-4" />}
                     </div>
                     <div>
                       <Link to={activity.link} className="text-[#1F2A44] hover:text-[#0A66C2] text-sm">
