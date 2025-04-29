@@ -2,9 +2,8 @@ import React, { useContext, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
-import Navbar from './Components/Navbar';
-import Sidebar from './Components/Sidebar';
-import FacultySideBar from './Components/FacultySidebar.jsx';
+import AdminNavbar from './Components/AdminNavbar';
+import FacultyNavbar from './Components/FacultyNavbar';
 
 import AdminDashboard from './Pages/Admin/admindashboard.jsx';
 import AddFaculty from './Pages/Admin/addFaculty.jsx';
@@ -37,13 +36,10 @@ const App = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
-      {(adminToken || facultyToken) && <Navbar />}
+      {(adminToken) && <AdminNavbar />}
+      {(facultyToken) && <FacultyNavbar/>}
       
       <div className="flex">
-       
-        {adminToken && <Sidebar />}
-        {facultyToken && <FacultySideBar />}
-
        
         <div className="flex-1 p-4">
           <Routes>
