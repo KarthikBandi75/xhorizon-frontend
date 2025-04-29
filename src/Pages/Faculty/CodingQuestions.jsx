@@ -86,7 +86,7 @@ const CodingQuestions = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow mt-12">
       <h2 className="text-2xl font-bold mb-4">Add Coding Question</h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
