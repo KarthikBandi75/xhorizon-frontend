@@ -51,7 +51,7 @@ const AddFaculty = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+    <div className="max-w-xl mx-auto mt-15 p-6 bg-white rounded-xl shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-center">Add Faculty</h2>
       <form onSubmit={addFaculty} className="space-y-4">
         <input
@@ -109,7 +109,7 @@ const AddFaculty = () => {
         />
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
         >
           Add Faculty
         </button>
