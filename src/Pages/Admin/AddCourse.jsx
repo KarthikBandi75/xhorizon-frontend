@@ -52,7 +52,7 @@ const AddCourse = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4">
+    <div className="max-w-xl mx-auto p-4 mt-15">
       <h2 className="text-2xl font-bold mb-4">Add New Course</h2>
       {message && <p className="text-green-600 mb-2">{message}</p>}
       {error && <p className="text-red-600 mb-2">{error}</p>}
@@ -93,7 +93,7 @@ const AddCourse = () => {
         />
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 cursor-pointer"
         >
           Add Course
         </button>
