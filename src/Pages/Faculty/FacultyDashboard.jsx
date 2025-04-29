@@ -1,212 +1,260 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '../Context/AppContext';
+import { Link } from 'react-router-dom';
 import axios from '../../config/axiosConfig';
-import {
-  ClipboardIcon,
-  CodeBracketIcon,
-  DocumentTextIcon,
-  UserIcon,
-  SunIcon,
-  MoonIcon,
-} from '@heroicons/react/24/outline';
+import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ClipboardIcon, CodeBracketIcon, DocumentTextIcon, UserIcon } from '@heroicons/react/24/outline';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 const FacultyDashboard = () => {
-  const [faculty, setFaculty] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const { facultyToken } = useContext(AuthContext);
+  const [metrics, setMetrics] = useState({
+    totalCourses: 0,
+    activeCourses: 0,
+    totalStudents: 0,
+    profileCompletion: 0,
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [facultyName, setFacultyName] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('FacultyToken');
-        const response = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/course/course", {
+        const coursesRes = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/course/course", {
           headers: { token },
         });
-        if (response.data.success) {
-          setFaculty(response.data.courses);
+
+        const courses = coursesRes.data.courses || [];
+        const totalCourses = courses.length;
+        const activeCourses = courses.filter(course => course.isActive).length;
+        const totalStudents = courses.reduce((sum, course) => sum + (course.enrolledStudents?.length || 0), 0);
+
+        const profileRes = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/faculty/profile", {
+          headers: { token },
+        });
+
+        const profile = profileRes.data.profile || {};
+        setFacultyName(profile.name || 'Faculty Member');
+
+        const profileFields = [
+          profile.email,
+          profile.profile,
+          profile.image,
+          profile.experience,
+        ];
+        const completedFields = profileFields.filter(field => field && field !== '').length;
+        const profileCompletion = Math.round((completedFields / profileFields.length) * 100);
+
+        setMetrics({ totalCourses, activeCourses, totalStudents, profileCompletion });
+
+        const recentAssessments = (courses[0]?.Assesments || []).slice(0, 2).map(assessment => ({
+          type: 'assessment',
+          text: `Added assessment: ${assessment.title}`,
+          link: `/course/${courses[0]?._id}`,
+          date: assessment.createdAt || new Date().toISOString(),
+        }));
+        const recentMaterials = (courses[0]?.lectureMaterials || []).slice(0, 2).map(material => ({
+          type: 'material',
+          text: `Uploaded material: ${material.title}`,
+          link: material.fileUrl || '#',
+          date: material.createdAt || new Date().toISOString(),
+        }));
+        setRecentActivity([...recentAssessments, ...recentMaterials].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4));
+
+        if (coursesRes.data.success && profileRes.data.success) {
+          toast.success('Dashboard data loaded successfully');
         }
-      } catch (error) {
-        console.error("Error loading dashboard:", error.message);
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+        toast.error('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    if (facultyToken) fetchData();
+  }, [facultyToken]);
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
+  const chartData = [
+    { name: 'Total Courses', value: metrics.totalCourses, fill: '#0A66C2' },
+    { name: 'Active Courses', value: metrics.activeCourses, fill: '#00A69C' },
+    { name: 'Students', value: metrics.totalStudents, fill: '#EF4444' },
+  ];
 
-  if (!faculty) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 text-gray-500 dark:text-gray-300 text-lg pt-16">
-        Loading dashboard...
-      </div>
-    );
-  }
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  };
 
-  const course = faculty.courses?.[0] || {};
-  const { Assesments = [], CodingQuestions = [], lectureMaterials = [] } = course;
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
+  };
 
   return (
-    <main className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 pt-20">
-      {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="pb-8 px-6 sm:px-12 lg:px-24 bg-gradient-to-r from-[#0A66C2] to-[#0958A6] text-white"
-      >
-        <h1 className="text-4xl font-extrabold tracking-tight">Welcome, {faculty.name}</h1>
-        <p className="mt-2 text-lg opacity-90">Manage your courses and track your teaching progress.</p>
-      </motion.header>
-
-      {/* Main Content */}
-      <div className="px-6 sm:px-12 lg:px-24 py-12 max-w-6xl mx-auto">
-        {/* Profile Card */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen pt-16 px-4 sm:px-6 lg:px-8 bg-[#F4F6F8]"
+    >
+      <div className="max-w-6xl mx-auto py-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-12 flex flex-col sm:flex-row gap-8 items-center transform hover:scale-[1.02] transition-transform duration-300"
+          transition={{ duration: 0.5 }}
+          className="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200 flex flex-col md:flex-row items-center justify-between"
         >
-          <img
-            src={faculty.image || 'https://via.placeholder.com/120'}
-            alt={faculty.name}
-            className="w-32 h-32 rounded-full object-cover border-4 border-[#0A66C2] dark:border-[#0958A6]"
-          />
-          <div className="text-center sm:text-left">
-            <h2 className="text-3xl font-bold text-[#1F2A44] dark:text-white">{faculty.name}</h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">{faculty.profile || 'Faculty Member'}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-300 mt-1 flex items-center justify-center sm:justify-start">
-              <span className="mr-1">📧</span> {faculty.email}
-            </p>
+          <div>
+            <h1 className="text-2xl font-bold text-[#1F2A44] mb-2">Welcome, {facultyName}</h1>
+            <p className="text-sm text-[#6B7280]">"Empower students with knowledge and skills."</p>
           </div>
-        </motion.section>
+          <Link
+            to="/course"
+            className="mt-4 md:mt-0 px-4 py-2 bg-[#0A66C2] text-white rounded-md text-sm font-medium hover:bg-[#0958A6]"
+          >
+            Manage Courses
+          </Link>
+        </motion.div>
 
-        {/* Summary Cards */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12"
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
         >
-          <SummaryCard title="Experience" value={`${faculty.experience || 0} yrs`} icon={<UserIcon className="h-8 w-8 text-[#0A66C2]" />} />
-          <SummaryCard title="Courses Taught" value={faculty.courses?.length || 0} icon={<DocumentTextIcon className="h-8 w-8 text-[#0958A6]" />} />
-          <SummaryCard title="Enrolled Students" value={course.enrolledStudents?.length || 0} icon={<ClipboardIcon className="h-8 w-8 text-blue-500" />} />
-        </motion.section>
+          {[
+            { label: 'Total Courses', value: metrics.totalCourses, icon: <DocumentTextIcon className="text-[#0A66C2]" size={24} />, link: '/course' },
+            { label: 'Active Courses', value: metrics.activeCourses, icon: <DocumentTextIcon className="text-[#00A69C]" size={24} />, link: '/course' },
+            { label: 'Enrolled Students', value: metrics.totalStudents, icon: <UserIcon className="text-[#EF4444]" size={24} />, link: '/course' },
+            { label: 'Profile Completion', value: metrics.profileCompletion, icon: <UserIcon className="text-[#0A66C2]" size={24} />, link: '/profile' },
+          ].map((metric, index) => (
+            <motion.div
+              key={metric.label}
+              variants={cardVariants}
+              className="bg-white rounded-lg shadow-sm p-4 border border-gray-200 hover:shadow-md transition-shadow flex items-center space-x-3"
+            >
+              {metric.icon}
+              <div>
+                <h3 className="text-sm font-medium text-[#6B7280]">{metric.label}</h3>
+                <p className="text-xl font-semibold text-[#1F2A44]">{metric.label === 'Profile Completion' ? `${metric.value}%` : metric.value}</p>
+                <Link to={metric.link} className="text-[#0A66C2] hover:text-[#0958A6] text-sm">
+                  View Details
+                </Link>
+              </div>
+              {metric.label === 'Profile Completion' && (
+                <div className="w-12 h-12">
+                  <CircularProgressbar
+                    value={metric.value}
+                    styles={buildStyles({
+                      pathColor: '#0A66C2',
+                      textColor: '#1F2A44',
+                      trailColor: '#E5E7EB',
+                    })}
+                  />
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
 
-        {/* Main Content Grid */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className="lg:col-span-2 bg-white rounded-lg shadow-sm p-5 border border-gray-200"
+          >
+            <h3 className="text-base font-semibold text-[#1F2A44] mb-4">Course Activity</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="name" stroke="#6B7280" />
+                  <YAxis stroke="#6B7280" />
+                  <Tooltip
+                    contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '4px' }}
+                    labelStyle={{ color: '#1F2A44' }}
+                  />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className="bg-white rounded-lg shadow-sm p-5 border border-gray-200"
+          >
+            <h3 className="text-base font-semibold text-[#1F2A44] mb-4">Recent Activity</h3>
+            <div className="space-y-4">
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center space-x-3"
+                  >
+                    <div className={`p-2 rounded-full ${activity.type === 'assessment' ? 'bg-[#E6F0FA]' : 'bg-[#D1FAE5]'}`}>
+                      {activity.type === 'assessment' ? <ClipboardIcon className="text-[#0A66C2]" size={16} /> : <DocumentTextIcon className="text-[#00A69C]" size={16} />}
+                    </div>
+                    <div>
+                      <Link to={activity.link} className="text-[#1F2A44] hover:text-[#0A66C2] text-sm">
+                        {activity.text}
+                      </Link>
+                      <p className="text-xs text-[#6B7280]">{new Date(activity.date).toLocaleDateString()}</p>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <p className="text-[#6B7280] text-sm">No recent activity</p>
+              )}
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="bg-white rounded-lg shadow-sm p-5 border border-gray-200"
         >
-          <InfoCard
-            title="Assessments"
-            icon={<ClipboardIcon className="h-6 w-6 text-blue-500" />}
-            items={Assesments}
-            fallback={[
-              { title: "Quiz 1", date: "2025-03-15", totalMarks: 20 },
-              { title: "Mid Term", date: "2025-04-01", totalMarks: 40 },
-            ]}
-            renderItem={(a) => (
-              <div className="space-y-2">
-                <p className="font-semibold text-[#1F2A44] dark:text-white">{a.title}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">📅 {a.date}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">📝 {a.totalMarks} Marks</p>
-              </div>
-            )}
-          />
-
-          <InfoCard
-            title="Coding Questions"
-            icon={<CodeBracketIcon className="h-6 w-6 text-green-500" />}
-            items={CodingQuestions}
-            fallback={[
-              { title: "Two Sum", level: "Easy" },
-              { title: "Merge Intervals", level: "Medium" },
-            ]}
-            renderItem={(q) => (
-              <div className="space-y-2">
-                <p className="font-semibold text-[#1F2A44] dark:text-white">{q.title}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">📌 {q.level}</p>
-              </div>
-            )}
-          />
-
-          <InfoCard
-            title="Lecture Materials"
-            icon={<DocumentTextIcon className="h-6 w-6 text-[#0958A6]" />}
-            items={lectureMaterials}
-            fallback={[
-              { title: "OOP Notes", topic: "OOP", fileUrl: "#" },
-              { title: "Sorting Algorithms", topic: "DSA", fileUrl: "#" },
-            ]}
-            renderItem={(m) => (
-              <div className="space-y-2">
-                <p className="font-semibold text-[#1F2A44] dark:text-white">{m.title}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">📚 {m.topic}</p>
-                <a
-                  href={m.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[#0A66C2] dark:text-[#0958A6] hover:underline"
+          <h3 className="text-base font-semibold text-[#1F2A44] mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            {[
+              { label: 'Add New Course', link: '/course', color: 'bg-[#0A66C2] hover:bg-[#0958A6]' },
+              { label: 'View All Courses', link: '/course', color: 'bg-[#00A69C] hover:bg-[#008C84]' },
+              { label: 'Manage Assessments', link: '/course', color: 'bg-[#0A66C2] hover:bg-[#0958A6]' },
+              { label: 'Edit Profile', link: '/profile', color: 'bg-[#00A69C] hover:bg-[#008C84]' },
+            ].map((action, index) => (
+              <motion.div
+                key={action.label}
+                variants={cardVariants}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to={action.link}
+                  className={`block text-center px-3 py-2 text-white text-sm font-medium rounded-md ${action.color}`}
                 >
-                  View Material
-                </a>
-              </div>
-            )}
-          />
-        </motion.section>
+                  {action.label}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
-    </main>
+    </motion.div>
   );
 };
-
-// Reusable Summary Card
-const SummaryCard = ({ title, value, icon }) => (
-  <motion.div
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 flex items-center gap-4 transform transition-transform duration-300"
-  >
-    <div className="p-3 bg-[#E6F0FA] dark:bg-[#1F2A44] rounded-full">{icon}</div>
-    <div>
-      <p className="text-sm text-gray-600 dark:text-gray-400">{title}</p>
-      <p className="text-2xl font-bold text-[#0A66C2] dark:text-[#0958A6]">{value}</p>
-    </div>
-  </motion.div>
-);
-
-// Reusable Info Card
-const InfoCard = ({ title, icon, items, fallback, renderItem }) => (
-  <motion.div
-    whileHover={{ scale: 1.02 }}
-    className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 transition-transform duration-300"
-  >
-    <div className="flex items-center gap-3 mb-6">
-      {icon}
-      <h2 className="text-xl font-semibold text-[#1F2A44] dark:text-white">{title}</h2>
-    </div>
-    <div className="space-y-6">
-      {(items.length > 0 ? items : fallback).map((item, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3, delay: i * 0.1 }}
-          className="p-4 bg-[#E6F0FA] dark:bg-[#1F2A44] rounded-lg hover:bg-[#D6E4F5] dark:hover:bg-[#2A3A55] transition"
-        >
-          {renderItem(item)}
-        </motion.div>
-      ))}
-    </div>
-  </motion.div>
-);
 
 export default FacultyDashboard;
