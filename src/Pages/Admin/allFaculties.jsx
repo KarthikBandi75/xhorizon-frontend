@@ -124,13 +124,14 @@ const AllFaculties = () => {
                 </div>
 
                 <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => deleteFaculty(faculty._id)}
-                  className="mt-auto bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-lg text-sm transition-all cursor-pointer"
-                >
-                  <FaTrashAlt /> Delete Faculty
-                </motion.button>
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => deleteFaculty(faculty._id)}
+                className="mt-auto w-full bg-[#EF4444] hover:bg-[#DC2626] text-white py-3 px-4 rounded-lg text-sm transition-all cursor-pointer"
+              >
+                <FaTrashAlt /> Delete Faculty
+              </motion.button>
+
               </motion.div>
             ))}
           </div>
