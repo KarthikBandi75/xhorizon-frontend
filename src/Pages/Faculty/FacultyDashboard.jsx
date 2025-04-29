@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
-
+import { AuthContext } from '../Context/AppContext';
 import { Link } from 'react-router-dom';
 import axios from '../../config/axiosConfig';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-import { ClipboardIcon, CodeBracketIcon, DocumentTextIcon, UserIcon } from '@heroicons/react/24/outline';
+import { ClipboardIcon, DocumentTextIcon, UserIcon } from '@heroicons/react/24/outline';
 
 const FacultyDashboard = () => {
+  const { facultyToken } = useContext(AuthContext);
   const [metrics, setMetrics] = useState({
     totalCourses: 0,
     activeCourses: 0,
@@ -21,12 +22,15 @@ const FacultyDashboard = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('FacultyToken');
-        console.log(token);
         const coursesRes = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/course/course", {
           headers: { token },
         });
-         console.log(courseRes);
-        const courses = coursesRes.data.courses || [];
+
+        // Log the response for debugging
+        console.log('Courses API Response:', coursesRes.data);
+
+        // Validate that courses is an array
+        const courses = Array.isArray(coursesRes.data.courses) ? coursesRes.data.courses : [];
         const totalCourses = courses.length;
         const activeCourses = courses.filter(course => course.isActive).length;
         const totalStudents = courses.reduce((sum, course) => sum + (course.enrolledStudents?.length || 0), 0);
@@ -34,6 +38,9 @@ const FacultyDashboard = () => {
         const profileRes = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/faculty/profile", {
           headers: { token },
         });
+
+        // Log the profile response for debugging
+        console.log('Profile API Response:', profileRes.data);
 
         const profile = profileRes.data.profile || {};
         setFacultyName(profile.name || 'Faculty Member');
@@ -49,13 +56,14 @@ const FacultyDashboard = () => {
 
         setMetrics({ totalCourses, activeCourses, totalStudents, profileCompletion });
 
-        const recentAssessments = (courses[0]?.Assesments || []).slice(0, 2).map(assessment => ({
+        // Safely access the first course's assessments and materials
+        const recentAssessments = (Array.isArray(courses[0]?.Assesments) ? courses[0].Assesments.slice(0, 2) : []).map(assessment => ({
           type: 'assessment',
           text: `Added assessment: ${assessment.title}`,
-          link: `/course/${courses[0]?._id}`,
+          link: `/course/${courses[0]?._id || ''}`,
           date: assessment.createdAt || new Date().toISOString(),
         }));
-        const recentMaterials = (courses[0]?.lectureMaterials || []).slice(0, 2).map(material => ({
+        const recentMaterials = (Array.isArray(courses[0]?.lectureMaterials) ? courses[0].lectureMaterials.slice(0, 2) : []).map(material => ({
           type: 'material',
           text: `Uploaded material: ${material.title}`,
           link: material.fileUrl || '#',
