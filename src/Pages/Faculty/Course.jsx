@@ -227,7 +227,7 @@ const Course = () => {
                                 <TrashIcon className="h-4 w-4 mr-1" /> Delete
                               </motion.button>
                             </td>
-                          </tr>
+                          </motion.tr>
                         ))}
                       </tbody>
                     </table>
@@ -241,7 +241,7 @@ const Course = () => {
                   onClick={() => navigate(`/codingQuestions/${course._id}`)}
                   className="mt-3 px-4 py-2 bg-[#0A66C2] text-white rounded-md text-sm font-medium hover:bg-[#0958A6] flex items-center"
                 >
-                  <PlusIcon className="h-plot5 w-5 mr-1" /> Add Coding Question
+                  <PlusIcon className="h-5 w-5 mr-1" /> Add Coding Question
                 </motion.button>
               </div>
 
@@ -286,7 +286,7 @@ const Course = () => {
                                 <TrashIcon className="h-4 w-4 mr-1" /> Delete
                               </motion.button>
                             </td>
-                          </tr>
+                          </motion.tr>
                         ))}
                       </tbody>
                     </table>
