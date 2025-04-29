@@ -21,8 +21,8 @@ const FacultyDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(token);
         const token = localStorage.getItem('FacultyToken');
+        console.log(token);
         const coursesRes = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/course/course", {
           headers: { token },
         });
