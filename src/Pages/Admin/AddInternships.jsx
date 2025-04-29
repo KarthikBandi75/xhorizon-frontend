@@ -72,9 +72,9 @@ const AddInternships = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-8 mt-15">
       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-8">
-        <h2 className="text-2xl font-bold mb-6 text-blue-700 text-center">Post an Internship</h2>
+        <h2 className="text-2xl font-bold mb-6 text-slate-700 text-center">Post an Internship</h2>
         {message && (
           <div className="mb-4 text-center text-sm text-green-600 font-semibold">{message}</div>
         )}
