@@ -9,10 +9,10 @@ import { ClipboardIcon, DocumentTextIcon, UserIcon } from '@heroicons/react/24/o
 const FacultyDashboard = () => {
  const facultyToken=localStorage.getItem('FacultyToken');
   const [metrics, setMetrics] = useState({
-    totalCourses: 0,
-    activeCourses: 0,
-    totalStudents: 0,
-    profileCompletion: 0,
+    totalCourses: 1,
+    activeCourses: 1,
+    totalStudents: 100,
+    profileCompletion: 75,
   });
   const [recentActivity, setRecentActivity] = useState([]);
   const [facultyName, setFacultyName] = useState('');
@@ -22,14 +22,12 @@ const FacultyDashboard = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('FacultyToken');
-        console.log(token);
+        
         const coursesRes = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/course/course", {
           headers: { token },
         });
 
-        // Log the response for debugging
-        console.log('Courses API Response:', coursesRes.data);
-
+   
         // Validate that courses is an array
         const courses = Array.isArray(coursesRes.data.courses) ? coursesRes.data.courses : [];
         const totalCourses = courses.length;
