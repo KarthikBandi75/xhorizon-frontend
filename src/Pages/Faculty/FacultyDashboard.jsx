@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../../Context/AppContext';
+
 import { Link } from 'react-router-dom';
 import axios from '../../config/axiosConfig';
 import { toast } from 'react-toastify';
@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import { ClipboardIcon, CodeBracketIcon, DocumentTextIcon, UserIcon } from '@heroicons/react/24/outline';
 
 const FacultyDashboard = () => {
-  const { facultyToken } = useContext(AuthContext);
   const [metrics, setMetrics] = useState({
     totalCourses: 0,
     activeCourses: 0,
@@ -22,10 +21,11 @@ const FacultyDashboard = () => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('FacultyToken');
+        console.log(token);
         const coursesRes = await axios.get("https://xhorizon-backend-1-4pjq.onrender.com/api/course/course", {
           headers: { token },
         });
-
+         console.log(courseRes);
         const courses = coursesRes.data.courses || [];
         const totalCourses = courses.length;
         const activeCourses = courses.filter(course => course.isActive).length;
