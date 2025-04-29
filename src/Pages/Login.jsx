@@ -15,7 +15,6 @@ const Login = () => {
 
   const { setadminToken, setfacultyToken } = useContext(AuthContext);
 
- 
   useEffect(() => {
     if (state === "Admin") {
       setEmail("xhorizonadmin@gmail.com");
@@ -108,6 +107,8 @@ const Login = () => {
           </motion.div>
 
           <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
@@ -120,7 +121,7 @@ const Login = () => {
 
         <div className="mt-4 text-center">
           {state === "Admin" ? (
-            <p>
+            <motion.p whileTap={{ scale: 0.95 }}>
               Faculty Login?{" "}
               <span
                 className="text-blue-400 cursor-pointer hover:underline"
@@ -128,9 +129,9 @@ const Login = () => {
               >
                 Click here
               </span>
-            </p>
+            </motion.p>
           ) : (
-            <p>
+            <motion.p whileTap={{ scale: 0.95 }}>
               Admin Login?{" "}
               <span
                 className="text-blue-400 cursor-pointer hover:underline"
@@ -138,7 +139,7 @@ const Login = () => {
               >
                 Click here
               </span>
-            </p>
+            </motion.p>
           )}
         </div>
       </motion.div>
