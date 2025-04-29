@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { ClipboardIcon, DocumentTextIcon, UserIcon } from '@heroicons/react/24/outline';
 
 const FacultyDashboard = () => {
- 
+ const facultyToken=localStorage.getItem('FacultyToken');
   const [metrics, setMetrics] = useState({
     totalCourses: 0,
     activeCourses: 0,
