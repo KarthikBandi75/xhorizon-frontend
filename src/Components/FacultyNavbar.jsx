@@ -4,7 +4,7 @@ import { FaUniversity } from 'react-icons/fa';
 import { AuthContext } from '../context/AppContext';
 import { LayoutDashboard, Book, User, Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { assets } from '../assets/assets';
+
 
 const FacultyNavbar = () => {
   const navigate = useNavigate();
@@ -45,7 +45,8 @@ const FacultyNavbar = () => {
           className="flex items-center gap-2 text-lg font-semibold text-[#0A66C2] cursor-pointer"
           onClick={() => navigate('/faculty-dashboard')}
         >
-          <img src={assets.logo} alt="Campus Bridge" className="w-30" />
+          <FaUniversity className="text-2xl text-blue-500" />
+        <p className="cursor-pointer">Campus Bridge</p> 
         </div>
 
         <div className="hidden md:flex items-center gap-4">
