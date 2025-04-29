@@ -41,13 +41,13 @@ const FacultyNavbar = () => {
       className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b border-gray-200"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-        <div
-          className="flex items-center gap-2 text-lg font-semibold text-[#0A66C2] cursor-pointer"
-          onClick={() => navigate('/faculty-dashboard')}
-        >
-          <FaUniversity className="text-2xl text-blue-500" />
-        <p className="cursor-pointer">Campus Bridge</p> 
-        </div>
+       <div
+  className="flex items-center gap-2 text-lg font-semibold text-[#0A66C2] cursor-pointer"
+  onClick={() => navigate('/faculty-dashboard')}
+>
+  <FaUniversity className="text-2xl text-blue-500" />
+  <p className="cursor-pointer">Campus Bridge</p>
+</div>
 
         <div className="hidden md:flex items-center gap-4">
           {navItems.map(({ to, label, icon }) => (
