@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FaUniversity } from 'react-icons/fa';
-import { AuthContext } from '../context/AppContext';
+import { AuthContext } from '../Context/AppContext';
 import { LayoutDashboard, Book, User, Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
