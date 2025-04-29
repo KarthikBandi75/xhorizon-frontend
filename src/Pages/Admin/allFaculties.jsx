@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../../config/axiosConfig';
-import {
-  FaUser,
-  FaEnvelope,
-  FaBook,
-  FaBriefcase,
-  FaInfoCircle,
-  FaIdBadge,
-  FaTrashAlt,
-} from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaBook, FaBriefcase, FaInfoCircle, FaIdBadge, FaTrashAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 
@@ -35,12 +27,18 @@ const AllFaculties = () => {
   };
 
   const deleteFaculty = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this faculty?")) return;
     try {
-      await axios.delete(`/api/faculty/delete/${id}`, { withCredentials: true });
-      setFaculties((prev) => prev.filter((faculty) => faculty._id !== id));
-      toast.success("Faculty deleted successfully!");
+      const response = await axios.delete(`/api/faculty/delete/${id}`, { withCredentials: true });
+      if (response.data.success) {
+        setFaculties(faculties.filter((faculty) => faculty._id !== id));
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
     } catch (err) {
       toast.error("Failed to delete faculty.");
+      console.error("Delete error:", err.message);
     }
   };
 
@@ -48,99 +46,96 @@ const AllFaculties = () => {
     fetchFaculties();
   }, [adminToken]);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-blue-50 py-10 px-6 sm:px-12">
-      <motion.h2
-        className="text-3xl sm:text-4xl font-bold text-center text-blue-900 mb-12"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        All Faculties
-      </motion.h2>
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-md p-6 animate-pulse">
-              <div className="h-24 w-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-2/3 mx-auto mb-1"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
-            </div>
-          ))}
-        </div>
-      ) : error ? (
-        <p className="text-red-600 text-center mt-10">{error}</p>
-      ) : faculties.length === 0 ? (
-        <p className="text-gray-500 text-center mt-10">No faculties found.</p>
-      ) : (
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            visible: { transition: { staggerChildren: 0.1 } },
-          }}
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 pt-24 px-4">
+      <div className="max-w-7xl mx-auto">
+        <motion.h2
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl font-bold text-cyan-900 mb-8"
         >
-          {faculties.map((faculty) => (
-            <motion.div
-              key={faculty._id}
-              className="bg-white rounded-xl shadow-lg border hover:shadow-2xl p-6 flex flex-col justify-between transition-transform hover:-translate-y-1"
-              variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: { opacity: 1, y: 0 },
-              }}
-            >
-              <div>
-                <div className="flex justify-center mb-4">
+          Manage Faculties
+        </motion.h2>
+
+        {isLoading ? (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="bg-white rounded-2xl shadow-md p-6 animate-pulse">
+                <div className="h-24 w-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-2/3 mx-auto mb-1"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-gray-500 text-center mt-10"
+          >
+            {error}
+          </motion.p>
+        ) : faculties.length === 0 ? (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-gray-500 text-center mt-10"
+          >
+            No faculties found.
+          </motion.p>
+        ) : (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {faculties.map((faculty, index) => (
+              <motion.div
+                key={faculty._id}
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: index * 0.1 }}
+                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col"
+              >
+                <div className="flex items-center gap-4 mb-4">
                   <img
                     src={faculty.image || 'https://via.placeholder.com/96'}
                     alt={faculty.name || 'Faculty Image'}
                     onError={(e) => (e.target.src = 'https://via.placeholder.com/96')}
-                    className="h-24 w-24 rounded-full border object-cover"
+                    className="w-12 h-12 rounded-full object-cover"
                   />
+                  <h3 className="text-xl font-semibold text-gray-800">{faculty.name || 'Unnamed'}</h3>
                 </div>
-                <h3 className="text-lg font-semibold text-center text-blue-800 flex items-center justify-center gap-2 mb-3">
-                  <FaUser /> {faculty.name || 'Unnamed'}
-                </h3>
-                <div className="text-sm text-gray-700 space-y-2">
-                  <p className="flex items-center gap-2">
-                    <FaEnvelope className="text-gray-500" /> {faculty.email || 'No email'}
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <FaBook className="text-gray-500" /> 
-                    <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">
-                      {faculty.subject || 'Unknown Subject'}
-                    </span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <FaBriefcase className="text-gray-500" />
-                    {faculty.experience ? `${faculty.experience} years` : 'No experience info'}
-                  </p>
-                  <p className="flex items-start gap-2">
-                    <FaInfoCircle className="text-gray-500 mt-1" />
-                    <span className="text-gray-600">{faculty.description || 'No description'}</span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <FaIdBadge className="text-gray-500" />
-                    <span className="bg-gray-100 px-2 py-0.5 rounded-full text-xs text-gray-600">
-                      {faculty.subjectId || 'N/A'}
-                    </span>
-                  </p>
-                </div>
-              </div>
 
-              <button
-                onClick={() => deleteFaculty(faculty._id)}
-                className="mt-6 w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 rounded-full transition"
-              >
-                <FaTrashAlt /> Delete Faculty
-              </button>
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
+                <div className="text-sm text-gray-600 space-y-1 mb-4">
+                  <p><span className="font-medium">Email:</span> {faculty.email || 'No email'}</p>
+                  <p><span className="font-medium">Subject:</span> {faculty.subject || 'Unknown Subject'}</p>
+                  <p><span className="font-medium">Experience:</span> {faculty.experience ? `${faculty.experience} years` : 'No experience info'}</p>
+                  <p><span className="font-medium">Joined:</span> {new Date(faculty.createdAt).toLocaleDateString()}</p>
+                  {faculty.description && (
+                    <p><span className="font-medium">Description:</span> {faculty.description}</p>
+                  )}
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => deleteFaculty(faculty._id)}
+                  className="mt-auto bg-[#EF4444] hover:bg-[#DC2626] text-white py-2 px-4 rounded-lg text-sm transition-all cursor-pointer"
+                >
+                  <FaTrashAlt /> Delete Faculty
+                </motion.button>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
